@@ -1,29 +1,32 @@
-# start with a lightweight linux image
-FROM alpine:3.6
+FROM alpine:3.5
 
-# add apache users first for consistency
-RUN adduser --system --group --no-create-home www-data
+# Install packages from testing repo's
+RUN apk update && \
+    apk upgrade && \
+    apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-curl \
+    php7-zlib php7-xml php7-phar php7-intl php7-dom php7-xmlreader php7-ctype \
+    php7-mbstring php7-gd nginx \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/main/ \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/
 
-# update package listings
-RUN apk update
-RUN apk upgrade
+# Install packages from stable repo's
+RUN apk --no-cache add supervisor curl
 
-# add necessary packages
-RUN apk add bash curl php-apache2 php-cli php-json php-openssl 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Configure nginx
+COPY config/nginx.conf /etc/nginx/nginx.conf
 
-# configure container
-RUN sed -i 's#^DocumentRoot ".*#DocumentRoot "/app"#g' /etc/apache2/httpd.conf
-RUN sed -i 's#AllowOverride none#AllowOverride All#' /etc/apache2/httpd.conf
-RUN sed -i 's#Listen 80#Listen 3000#' /etc/apache2/httpd.conf
+# Configure PHP-FPM
+COPY config/fpm-pool.conf /etc/php7/php-fpm.d/zzz_custom.conf
+COPY config/php.ini /etc/php7/conf.d/zzz_custom.ini
 
-# copy data
-RUN mkdir /app
-COPY www/* /app
-RUN chown -R apache:apache /app
+# Configure supervisord
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# open ports
+# Add application
+RUN mkdir -p /var/www
+RUN mkdir -p /run/nginx
+WORKDIR /var/www
+COPY www /var/www
+
 EXPOSE 3000
-
-# run the httpd server
-CMD ["httpd", "-D", "FOREGROUND"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

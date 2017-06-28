@@ -10,22 +10,9 @@ apt-get update
 apt-get -y upgrade
 
 # install dev tools
-apt-get -y install emacs vim gcc g++ build-essential git make curl \
-           git-core zlib1g-dev libssl-dev libreadline-dev libyaml-dev \ 
-           libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libffi-dev \
-           libcurl4-openssl-dev python-software-properties python \ 
-           python-dev python-pip python-yaml nodejs
+apt-get -y install emacs vim gcc g++ build-essential git make curl git-core libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libcurl4-openssl-dev python-software-properties python python-dev python-pip python-yaml
 pip install --upgrade pip
 pip install --upgrade virtualenv
-
-# install ruby and rails
-gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-curl -sSL https://get.rvm.io -o /tmp/rvm.sh
-cat /tmp/rvm.sh | bash -s stable --rails
-echo "source /home/vagrant/.rvm/scripts/rvm" >> /home/vagrant/.bashrc
-
-# install glide (for package management), but not go runtime
-curl https://glide.sh/get | sh
 
 # install docker requirements
 apt-get -y install linux-image-extra-$(uname -r) linux-image-extra-virtual

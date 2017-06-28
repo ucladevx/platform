@@ -1,18 +1,18 @@
 # start with a lightweight linux image
 FROM alpine:3.6
 
-# update package listings
-RUN apk update
-RUN apk upgrade
-
 # add necessary packages
-RUN apk add bash curl nginx
+RUN apk update && \
+    apk upgrade && \
+    apk add bash curl nginx && \
+    rm -rf /var/cache/apk/*
 
 # create working directory
-RUN mkdir /app
+RUN mkdir -p /app/static
+RUN mkdir -p /run/nginx
 
 # copy data to app location
-COPY static /app
+COPY static /app/static
 COPY nginx.conf /etc/nginx
 
 # set the working directory and copy source files

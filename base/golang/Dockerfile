@@ -1,12 +1,11 @@
 # start with a lightweight linux image
 FROM alpine:3.6
 
-# update package listings
-RUN apk update
-RUN apk upgrade
-
 # add necessary packages
-RUN apk add bash curl go glide
+RUN apk update && \
+    apk upgrade && \
+    apk add bash curl go glide && \
+    rm -rf /var/cache/apk/*
 
 # setup go env variables
 ENV GOPATH /app

@@ -4,13 +4,41 @@ Currently only supports a limited setup
 from __future__ import print_function
 import os
 import shutil
+import subprocess
 import yaml
 
-def create_stack(stack):
+def __exec(cmd):
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    for stdout_line in iter(popen.stdout.readline, ""):
+        print(stdout_line, end='')
+    popen.stdout.close()
+    return_code = popen.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, cmd)
+
+def create_web_stack(stack):
     """ Create the web stack given a stack name
-    The function checks the base/ folder for the stack and copies
-    it to the current directory. Development with that stack should
+    The function checks the installer/ folder for the stack and
+    runs the corresponding installer. Development with that stack should
     happen in that folder.
+    """
+    # PRECONDITION: `stack` is a valid stack in base/
+    try:
+        # check if this stack has already been generated
+        os.stat(stack + "_app")
+        # the stack already exists. do not overwrite it.
+        print("A folder with the name '%s_app/' already exists."%stack)
+        print("To avoid potentially deleting important data, this stack was not generated.")
+    except OSError:
+        # if we are here, then os.stat threw an error.
+        # this means that `stack` does not exist in the current folder
+        # execute the install script
+        __exec("installer/%s.sh"%stack)
+
+def create_db_stack(stack):
+    """ Create the db stack given a stack name
+    The function checks the base/ folder for the db stack and
+    copies the corresponding files.
     """
     # PRECONDITION: `stack` is a valid stack in base/
     try:
@@ -19,15 +47,16 @@ def create_stack(stack):
         # the stack already exists. do not overwrite it.
         print("A folder with the name '%s/' already exists."%stack)
         print("To avoid potentially deleting important data, this stack was not generated.")
-    except OSError as error:
+    except OSError:
         # if we are here, then os.stat threw an error.
         # this means that `stack` does not exist in the current folder
-        # copy the stack directory
-        shutil.copytree('base/%s'%stack, stack)
-    except shutil.Error as error:
-        # An error in copying occurred
-        print("An error occurred while copying '%s' to '%s/:"%('base/%s'%stack, stack))
-        print(error)
+        # copy the db folder
+        try:
+            shutil.copytree("base/%s"%stack, stack)
+        except shutil.Error as error:
+            # An error in copying occurred
+            print("An error occurred while copying '%s' to '%s/:"%('base/%s'%stack, stack))
+            print(error)
 
 def generate():
     """Read the docker-compose.yml file and generate the necessary stacks"""
@@ -42,10 +71,11 @@ def generate():
         for service in yaml_read["services"].keys():
             try:
                 service_name = "_".join(service.split("_")[1:])
-                # make sure the service exists and has a template
+                # make sure the service exists and has an installer
                 os.stat("base/%s"%service_name)
 
                 if service.startswith("web"):
+                    os.stat("installer/%s.sh"%service_name)
                     create_web.append(service_name)
                 if service.startswith("db"):
                     create_db.append(service_name)
@@ -56,11 +86,11 @@ def generate():
         print("Generating web stack(s)...")
         for stack in create_web:
             print(" --> %s"%stack)
-            create_stack(stack)
+            create_web_stack(stack)
         print("Generating db stack(s)...")
         for stack in create_db:
             print(" --> %s"%stack)
-            create_stack(stack)
+            create_db_stack(stack)
 
 if __name__ == '__main__':
     generate()

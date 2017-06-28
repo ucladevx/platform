@@ -12,3 +12,7 @@ dev: build
 
 run:
 	sudo docker-compose up -d
+
+docker-reset:
+	-sudo docker ps -a | cut -d ' ' -f 1 | xargs sudo docker rm
+	-sudo docker images | tr -s ' ' | cut -d ' ' -f 3 | xargs sudo docker rmi --force

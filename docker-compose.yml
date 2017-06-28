@@ -17,17 +17,17 @@
 version: '2'
 services:
   # web_rails:
-  #   build: ./rails
+  #   build: ./rails_app
   #   ports:
   #     - "3000:3000"
-  #   links:
-  #     - db_postgres
+  # links:
+  #   - db_postgres
   #     - db_redis
   #     - db_mongo
   #     - db_mysql
   
   # web_node:
-  #   build: ./node
+  #   build: ./node_app
   #   ports:
   #     - "3000:3000"
   #   links:
@@ -37,7 +37,7 @@ services:
   #     - db_mysql
 
   # web_golang:
-  #   build: ./golang
+  #   build: ./golang_app
   #   ports:
   #     - "3000:3000"
   #   links:
@@ -47,7 +47,7 @@ services:
   #     - db_mysql
 
   # web_python:
-  #   build: ./python
+  #   build: ./python_app
   #   ports:
   #     - "3000:3000"
   #   links:
@@ -57,7 +57,7 @@ services:
   #     - db_mysql
 
   # web_php:
-  #   build: ./php
+  #   build: ./php_app
   #   ports:
   #     - "3000:3000"
   #   links:

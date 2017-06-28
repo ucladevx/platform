@@ -29,6 +29,10 @@ if [ $(uname -s) == "Darwin" ]; then
     echo ""
     echo "And we're done! Make sure to do all your development in a DevX Docker container for your stack. We recommend running docker in a vagrant machine to avoid cluttering your computer."
     echo "If you choose not to use Vagrant for development, make sure to install docker."
+elif [ $(uname -s) == "Linux" ]; then
+    echo "We recommended you install vagrant and virtualbox, then develop in the VM."
+    echo "If you are confident that you do not want to do that, feel free to set up your own dev environment."
+    echo "You can look at the vagrant-provision.sh script to see which dev tools you want to install."
 else
     echo "Unsupported platform"
 fi

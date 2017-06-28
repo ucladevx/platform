@@ -2,14 +2,13 @@
 FROM alpine:3.6
 
 # add redis user first for consistency
-RUN adduser --system --group --no-create-home redis
-
-# update package listings
-RUN apk update
-RUN apk upgrade
+RUN adduser -SDH redis
 
 # add necessary packages
-RUN apk add bash curl redis
+RUN apk update && \
+    apk upgrade && \ 
+    apk add bash curl redis && \
+    rm -rf /var/cache/apk/*
 
 # persist db data
 RUN mkdir -p /data/db
