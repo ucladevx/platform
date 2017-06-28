@@ -16,15 +16,17 @@ def create_stack(stack):
     try:
         # check if this stack has already been generated
         os.stat(stack)
-        # copy the stack directory
-        shutil.copytree('base/%s/template'%stack, stack)
-    except OSError:
         # the stack already exists. do not overwrite it.
         print("A folder with the name '%s/' already exists."%stack)
         print("To avoid potentially deleting important data, this stack was not generated.")
+    except OSError as error:
+        # if we are here, then os.stat threw an error.
+        # this means that `stack` does not exist in the current folder
+        # copy the stack directory
+        shutil.copytree('base/%s'%stack, stack)
     except shutil.Error as error:
         # An error in copying occurred
-        print("An error occurred while copying '%s/' to '%s/:"%('base/%s/template'%stack, stack))
+        print("An error occurred while copying '%s' to '%s/:"%('base/%s'%stack, stack))
         print(error)
 
 def generate():
@@ -32,20 +34,21 @@ def generate():
     # Open the docker-compose.yml file
     with open('docker-compose.yml', 'r') as yaml_file:
         # read the docker configuration yfile
-        yaml_read = yaml.safe_read(yaml_file)
+        yaml_read = yaml.load(yaml_file)
         create_web = []
         create_db = []
 
         # iterate through all services
         for service in yaml_read["services"].keys():
             try:
+                service_name = "_".join(service.split("_")[1:])
                 # make sure the service exists and has a template
-                os.stat("base/%s"%service)
+                os.stat("base/%s"%service_name)
 
                 if service.startswith("web"):
-                    create_web.append(service.split("web_")[1])
+                    create_web.append(service_name)
                 if service.startswith("db"):
-                    create_db.append(service.split("db_")[1])
+                    create_db.append(service_name)
             except OSError:
                 # either invalid service or no template required for stack
                 print("No configuration for stack element '%s'. Skipping."%service)

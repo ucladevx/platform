@@ -6,7 +6,7 @@ RUN apk update
 RUN apk upgrade
 
 # add necessary packages
-RUN apk add bash make gcc g++ 'nodejs<=6.10.3'
+RUN apk add bash 'nodejs-npm<=6.11'
 
 # create working directory
 RUN mkdir /app
@@ -17,8 +17,8 @@ COPY npm-shrinkwrap.json /app
 RUN cd /app && npm install
 
 # set the working directory and copy source files
+COPY . /app/
 WORKDIR /app
-COPY .. /app
 
 # open a port and start the server
 EXPOSE 3000
