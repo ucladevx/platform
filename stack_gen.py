@@ -33,7 +33,7 @@ def create_web_stack(stack):
         # if we are here, then os.stat threw an error.
         # this means that `stack` does not exist in the current folder
         # execute the install script
-        __exec("installer/%s.sh"%stack)
+        __exec("base/installer/%s.sh"%stack)
 
 def create_db_stack(stack):
     """ Create the db stack given a stack name
@@ -52,10 +52,10 @@ def create_db_stack(stack):
         # this means that `stack` does not exist in the current folder
         # copy the db folder
         try:
-            shutil.copytree("base/%s"%stack, stack)
+            shutil.copytree("base/template/%s"%stack, stack)
         except shutil.Error as error:
             # An error in copying occurred
-            print("An error occurred while copying '%s' to '%s/:"%('base/%s'%stack, stack))
+            print("An error occurred while copying 'base/template/%s' to '%s/:"%(stack, stack))
             print(error)
 
 def generate():
@@ -72,10 +72,10 @@ def generate():
             try:
                 service_name = "_".join(service.split("_")[1:])
                 # make sure the service exists and has an installer
-                os.stat("base/%s"%service_name)
+                os.stat("base/template/%s"%service_name)
 
                 if service.startswith("web"):
-                    os.stat("installer/%s.sh"%service_name)
+                    os.stat("base/installer/%s.sh"%service_name)
                     create_web.append(service_name)
                 if service.startswith("db"):
                     create_db.append(service_name)

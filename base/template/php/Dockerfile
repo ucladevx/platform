@@ -23,10 +23,9 @@ COPY config/php.ini /etc/php7/conf.d/zzz_custom.ini
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add application
-RUN mkdir -p /var/www
 RUN mkdir -p /run/nginx
+VOLUME ["/var/www"]
 WORKDIR /var/www
-COPY www /var/www
 
 EXPOSE 3000
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -8,11 +8,10 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 # create working directory
-RUN mkdir -p /app/static
+VOLUME ["/app"]
 RUN mkdir -p /run/nginx
 
 # copy data to app location
-COPY static /app/static
 COPY nginx.conf /etc/nginx
 
 # set the working directory and copy source files

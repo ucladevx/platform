@@ -7,16 +7,18 @@ RUN apk update && \
     apk add bash 'nodejs-npm<=6.11' && \
     rm -rf /var/cache/apk/*
 
-# create working directory
-RUN mkdir /app
+# create the data volume
+VOLUME ["/app"]
 
 # copy the package.json and shinkwrap file to app location
-COPY package.json /app
-COPY npm-shrinkwrap.json /app
-RUN cd /app && npm install
+COPY package.json /tmp
+COPY npm-shrinkwrap.json /tmp
+RUN cd /tmp && \
+    mkdir node_modules && \
+    npm install && \
+    mv /tmp/node_modules /app/node_modules
 
-# set the working directory and copy source files
-COPY . /app/
+# set the working directory
 WORKDIR /app
 
 # open a port and start the server

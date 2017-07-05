@@ -61,8 +61,11 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "2048"
-    vb.cpus = "4"
+    vb.name = "devx"
+    vb.memory = 2048
+    vb.cpus = 4
+    vb.gui = false
+
   end
   #
   # View the documentation for the provider you are using for more
@@ -78,5 +81,5 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "shell", path: "vagrant-provision.sh"
+  config.vm.provision "shell", path: "vagrant-provision.sh", privileged: false
 end

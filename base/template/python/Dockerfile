@@ -30,12 +30,11 @@ RUN echo \
   && if [[ ! -e /usr/bin/pip ]]; then ln -sf /usr/bin/pip2.7 /usr/bin/pip; fi \
   && echo
 
-RUN mkdir /app
-WORKDIR /app
+COPY requirements.txt /tmp
+RUN cd /tmp && pip install -r requirements.txt
 
-COPY requirements.txt /app
-RUN pip install -r requirements.txt
-COPY . /app
+VOLUME ["/app"]
+WORKDIR /app
 
 EXPOSE 3000
 CMD ["python", "index.py"]

@@ -7,12 +7,15 @@ stack:
 build:
 	sudo docker-compose build
 
-dev: build
+dev-deploy: build
 	sudo docker-compose up
 
-run:
+deploy:
 	sudo docker-compose up -d
 
+stop:
+	-sudo docker ps | tail -n +2 | cut -d ' ' -f 1 | xargs sudo docker kill
+
 docker-reset:
-	-sudo docker ps -a | cut -d ' ' -f 1 | xargs sudo docker rm
-	-sudo docker images | tr -s ' ' | cut -d ' ' -f 3 | xargs sudo docker rmi --force
+	-sudo docker ps -a | tail -n +2 | cut -d ' ' -f 1 | xargs sudo docker rm
+	-sudo docker images | tail -n +2 | tr -s ' ' | cut -d ' ' -f 3 | xargs sudo docker rmi --force
